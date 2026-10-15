@@ -94,6 +94,36 @@ RSpec.describe ROM::Relation, '#do_update' do
       expect(joes_task[:user_id]).to be(1)
     end
 
+    it 'merges assignments of chained calls' do
+      conflicting.do_update(title: 'Renamed').do_update(:user_id).insert(user_id: 1, title: "Joe's task")
+
+      expect(joes_task).to eql(id: 1, user_id: 1, title: 'Renamed')
+    end
+
+    it 'lets a later call win for the same column' do
+      conflicting.do_update(user_id: nil).do_update(:user_id).insert(user_id: 1, title: "Joe's task")
+
+      expect(joes_task[:user_id]).to be(1)
+    end
+
+    it 'keeps previous assignments when a later call only adds a condition' do
+      conflicting
+        .do_update(title: 'Renamed')
+        .do_update { where(user_id: 2) }
+        .insert(user_id: 1, title: "Joe's task")
+
+      expect(joes_task).to eql(id: 1, user_id: 2, title: 'Renamed')
+    end
+
+    it 'joins conditions of chained calls with AND' do
+      conflicting
+        .do_update(:user_id) { where(user_id: 2) }
+        .do_update { where(user_id < excluded[:user_id]) }
+        .insert(user_id: 1, title: "Joe's task")
+
+      expect(joes_task[:user_id]).to be(2)
+    end
+
     it 'handles conflicts in multi_insert' do
       conflicting.do_update(:user_id).multi_insert(
         [{ user_id: 1, title: "Joe's task" }, { user_id: 2, title: "Jane's task" }, { user_id: 1, title: 'New task' }]

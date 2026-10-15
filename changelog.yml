@@ -2,7 +2,8 @@
   summary:
   date: unreleased
   added:
-  - "`Relation#on_conflict`, `#do_update` and `#do_nothing` for building INSERT ... ON CONFLICT statements, with a DSL for the DO UPDATE part. Create commands and changesets built on such a relation become upserts (@flash-gordon)"
+  - "`Relation#on_conflict`, `#do_update` and `#do_nothing` for building INSERT ... ON CONFLICT statements, with a DSL for the DO UPDATE part. The index predicate is given as a block or as `where:`, chained `do_update` calls merge their assignments and AND their conditions. Create commands and changesets built on such a relation become upserts (@flash-gordon)"
+  - "`Relation#returning` for getting columns of the rows written by `insert`, `multi_insert`, `update` and `delete` as hashes (@flash-gordon)"
   fixed:
   - "Use dataset to fetch record after insert so that read types are properly applied in Create command (@katafrakt)"
   changed:

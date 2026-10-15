@@ -86,6 +86,32 @@ RSpec.describe ROM::Relation, '#on_conflict' do
 
         expect(relation.where(title: "Jane's task").count).to be(2)
       end
+
+      it 'infers the index from a predicate passed as where' do
+        relation.on_conflict(:title, where: relation[:user_id].is(1)).insert(user_id: 1, title: "Jane's task")
+
+        expect(relation.where(title: "Jane's task").count).to be(1)
+      end
+
+      it 'accepts a hash predicate as where' do
+        relation.on_conflict(:title, where: { user_id: 1 }).insert(user_id: 1, title: "Jane's task")
+
+        expect(relation.where(title: "Jane's task").count).to be(1)
+      end
+
+      it 'reaches a column a local variable of the same name would shadow in a block' do
+        user_id = 1
+
+        relation.on_conflict(:title, where: relation[:user_id].is(user_id)).insert(user_id:, title: "Jane's task")
+
+        expect(relation.where(title: "Jane's task").count).to be(1)
+      end
+
+      it 'raises when the predicate is given both as where and as a block' do
+        expect {
+          relation.on_conflict(:title, where: { user_id: 1 }) { user_id.is(1) }
+        }.to raise_error(ArgumentError, /either as where: or as a block/)
+      end
     end
   end
 

@@ -8,6 +8,7 @@ require 'rom/sql/transaction'
 
 require 'rom/sql/relation/reading'
 require 'rom/sql/relation/writing'
+require 'rom/sql/relation/conflicts'
 
 module ROM
   module SQL
@@ -19,6 +20,7 @@ module ROM
 
       include SQL
       include Writing
+      include Conflicts
       include Reading
 
       extend Notifications::Listener
