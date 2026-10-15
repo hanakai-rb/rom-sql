@@ -19,6 +19,7 @@ module ROM
     MissingPrimaryKeyError    = Class.new(StandardError)
     MigrationError            = Class.new(StandardError)
     UnsupportedConversion     = Class.new(MigrationError)
+    UnsupportedFeatureError   = Class.new(StandardError)
 
     ERROR_MAP = {
       Sequel::DatabaseError => DatabaseError,

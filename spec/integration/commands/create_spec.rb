@@ -350,4 +350,36 @@ RSpec.describe 'Commands / Create', :postgres, seeds: false do
       ])
     end
   end
+
+  describe 'on a relation with conflict handling' do
+    let(:task) { { title: 'task 1' } }
+
+    seed do
+      create_user.call(name: 'Jane')
+      create_task.call(task)
+    end
+
+    it 'returns nothing when the conflict is ignored' do
+      expect(tasks.on_conflict(:title).command(:create).call(task)).to eql([])
+    end
+
+    it 'returns the updated tuple' do
+      command = tasks.on_conflict(:title).do_update(:user_id).command(:create)
+
+      expect(command.call(task.merge(user_id: 1))).to eql([{ id: 1, user_id: 1, title: 'task 1' }])
+    end
+
+    it 'returns inserted and updated tuples' do
+      command = tasks.on_conflict(:title).do_update(:user_id).command(:create)
+
+      expect(command.call([task.merge(user_id: 1), title: 'task 2', user_id: 1])).to match([
+        { id: 1, user_id: 1, title: 'task 1' },
+        hash_including(user_id: 1, title: 'task 2')
+      ])
+    end
+
+    it 'leaves the plain command failing on conflict' do
+      expect { tasks.command(:create).call(task) }.to raise_error(ROM::SQL::UniqueConstraintError)
+    end
+  end
 end

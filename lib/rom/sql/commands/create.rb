@@ -11,6 +11,9 @@ module ROM
       class Create < ROM::Commands::Create
         adapter :sql
 
+        # Lets a relation carrying ON CONFLICT be used via `relation.command(:create)`
+        restrictable true
+
         include ErrorWrapper
 
         use :associates

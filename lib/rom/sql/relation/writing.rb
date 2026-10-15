@@ -4,6 +4,33 @@ module ROM
   module SQL
     class Relation < ROM::Relation
       module Writing
+        # Return columns of the rows written
+        #
+        # Inserts, updates and deletes through the returned relation answer
+        # the listed columns of every row they wrote, as an array of hashes,
+        # instead of a primary key or a count. Without arguments every column
+        # is returned. Reading from the relation is unaffected.
+        #
+        # @example return the ids of the rows an upsert actually wrote
+        #   users.on_conflict(:email).returning(:id).multi_insert(tuples)
+        #   # => [{ id: 1 }, { id: 3 }]
+        #
+        # @param [Array<Symbol, SQL::Attribute>] columns
+        #
+        # @raise [UnsupportedFeatureError] when the database has no RETURNING
+        #
+        # @return [Relation]
+        #
+        # @api public
+        def returning(*columns)
+          unless dataset.supports_returning?(:insert)
+            raise UnsupportedFeatureError,
+                  "RETURNING is not supported by #{dataset.db.database_type}"
+          end
+
+          new(dataset.returning(*columns.map { |c| c.is_a?(Attribute) ? c.name : c }))
+        end
+
         # Add upsert option (only PostgreSQL >= 9.5)
         # Uses internal Sequel implementation
         # Default - ON CONFLICT DO NOTHING
@@ -46,13 +73,19 @@ module ROM
         # @example
         #   users.multi_insert([{name: 'Jane'}, {name: 'Jack'}])
         #
-        # @param [Array<Hash>] args
+        # @param [Array<Hash>] tuples
+        # @param [Hash] options Passed on to Sequel's `multi_insert`
         #
-        # @return [Array<String>] A list of executed SQL statements
+        # @return [Array<String>, Array<Hash>] A list of executed SQL statements,
+        #   or the returned rows when the relation carries `returning`
         #
         # @api public
-        def multi_insert(...)
-          dataset.multi_insert(...)
+        def multi_insert(tuples, options = EMPTY_HASH)
+          if dataset.opts.key?(:returning) && options.empty?
+            returning_multi_insert(tuples)
+          else
+            dataset.multi_insert(tuples, options)
+          end
         end
 
         # Update tuples in the relation
@@ -126,6 +159,24 @@ module ROM
               },
               options
             )
+          end
+        end
+
+        private
+
+        # Sequel's multi_insert answers bare values for a single returned
+        # column on PostgreSQL and drops RETURNING rows altogether on SQLite,
+        # so the statements are run here and every row comes back as a hash
+        #
+        # @api private
+        def returning_multi_insert(tuples)
+          if tuples.empty?
+            EMPTY_ARRAY
+          else
+            columns = tuples.first.keys
+            values = tuples.map { |tuple| tuple.values_at(*columns) }
+
+            dataset.multi_insert_sql(columns, values).flat_map { |sql| dataset.with_sql(sql).to_a }
           end
         end
       end
