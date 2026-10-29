@@ -9,6 +9,8 @@ require 'rom/sql/migration/runner'
 require 'rom/sql/migration/inline_runner'
 require 'rom/sql/migration/writer'
 
+Sequel.extension :sql_migrations
+
 module ROM
   module SQL
     module Migration
