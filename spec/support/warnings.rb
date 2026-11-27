@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# this file is managed by rom-rb/devtools project
-
 require "warning"
 
 Warning.ignore(%r{rspec/core})

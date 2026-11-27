@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# this file is managed by rom-rb/devtools project
-
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 group :test do

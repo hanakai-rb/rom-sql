@@ -1,5 +1,3 @@
-# this file is managed by rom-rb/devtools project
-
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2
