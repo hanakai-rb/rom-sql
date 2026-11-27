@@ -14,8 +14,8 @@ module ROM
         end
 
       COLOR_OPTION =
-        if as_version && as_version >= ::Gem::Version.new('7.2')
-          { color: true }
+        if as_version && as_version >= ::Gem::Version.new('7.1.2')
+          { bold: true }
         else
           true
         end
