@@ -8,6 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+[Unreleased]: https://github.com/hanakai-rb/rom-sql/compare/v3.8.0...main
+
+## [3.8.0] - 2026-11-27
+
+### Added
+
 - Support plain SQL migrations. Write a migration as a `.sql` file in your migrations directory, and use `-- @migrate` comment directives to mark its up and down sections. (@alassek in #440)
 
     ```sql
@@ -29,17 +45,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Require Ruby 3.3 or later.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Apply read types only once to tuples returned from Create commands. Before, read types were applied twice on all databases except PostgreSQL, which caused errors for read types that could not be applied twice. (@katafrakt in #432)
 
-### Security
-
-[Unreleased]: https://github.com/hanakai-rb/rom-sql/compare/v3.7.0...main
+[3.8.0]: https://github.com/hanakai-rb/rom-sql/compare/v3.7.0...v3.8.0
 
 ## [3.7.0] - 2025-01-08
 
