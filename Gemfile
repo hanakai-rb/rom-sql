@@ -24,12 +24,7 @@ else
 end
 
 group :test do
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.3')
-    gem 'debug', platforms: :ruby
-  else
-    gem 'pry', '~> 0.12.2', '<= 0.13'
-    gem 'pry-byebug', platforms: :ruby
-  end
+  gem 'debug', platforms: :ruby
 
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.4')
     gem 'mutex_m'

@@ -27,7 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Require Ruby 3.2 or later. (@flash-gordon)
+- Require Ruby 3.3 or later.
 
 ### Deprecated
 

@@ -21,7 +21,7 @@
 
 This library officially supports the following Ruby versions:
 
-* MRI >= `3.2`
+* MRI >= `3.3`
 
 ## License
 
